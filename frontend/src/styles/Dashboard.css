@@ -1,0 +1,139 @@
+/* Dashboard Header */
+.dashboard{
+  padding-top: 100px;
+  padding-left: 100px;
+  padding-right: 100px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.dashboard-title {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.generate-btn {
+    background-color: #1499d1;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.generate-btn:hover {
+    background-color: #0284c7;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: #1e293b;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid #38bdf8;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-title {
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #38bdf8;
+}
+
+/* Chart Container */
+.analytics-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.main-chart {
+    background: #1e293b;
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.side-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.progress-card {
+    background: #1e293b;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #334155;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #7dd3fc);
+    width: 75%;
+}
+
+/* Recent Exams */
+.recent-exams {
+    margin-top: 3rem;
+    background: #1e293b;
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.exam-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #334155;
+}
+
+.exam-item:last-child {
+    border-bottom: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .analytics-container {
+        grid-template-columns: 1fr;
+    }
+
+    .nav-links {
+        display: none;
+    }
+}
