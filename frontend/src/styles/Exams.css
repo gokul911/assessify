@@ -1,0 +1,124 @@
+.exams-container {
+  padding-top: 100px;
+  padding-bottom: 200px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  color: #ffffff;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.subjects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.subject-card {
+  background: #2d2d2d;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+  border: 1px solid #404040;
+}
+
+.subject-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.subject-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.subject-title {
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.status-pending {
+  background: #ff6b6b;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.status-completed {
+  background: #4CAF50;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.progress-bar {
+  background: #404040;
+  height: 8px;
+  border-radius: 4px;
+  margin: 15px 0;
+}
+
+.progress {
+  background: #4CAF50;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.btn-view {
+  background: #3a3a3a;
+  color: #e0e0e0;
+  border: 1px solid #404040;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-view:hover {
+  background: #3b82f6;
+  color: white;
+  border-color: transparent;
+}
+
+/* Subject-specific header colors */
+.subject-card:nth-child(1) .subject-header {
+  background: #2e7d32;
+}
+
+.subject-card:nth-child(2) .subject-header {
+  background: #1565c0;
+}
+
+.subject-card:nth-child(3) .subject-header {
+  background: #6a1b9a;
+}
+
+/* .subject-card:nth-child(4) .subject-header {
+  background: #ff8f00;
+} */
+
+@media (max-width: 768px) {
+  .subjects-grid {
+      grid-template-columns: 1fr;
+  }
+}
