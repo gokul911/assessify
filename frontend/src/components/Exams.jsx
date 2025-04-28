@@ -10,7 +10,8 @@ const Exams = () => {
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/user/exams`, {withCredentials : true});
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/user/individual-student-exams`, {withCredentials : true});
+                console.log("Exams.jsx status data -> ", response.data);
                 setSubjects(response.data);
             } catch (error) {
                 console.error("Error fetching subjects:", error);
@@ -30,11 +31,23 @@ const Exams = () => {
     return (
         <div className="exams-container">
             <div className="header">
-                <h1>Exam Portal</h1>
-                <p>Manage your subject exams</p>
+                <h1>Welcome to the Exam Portal</h1>
+                <p>Start your journey by taking exams for your subjects</p>
             </div>
 
             <div className="subjects-grid">
+                {subjects.length === 0 && 
+                    <div style={{ textAlign: 'center' }}>
+                    <h1 style={{ fontSize: '20px', marginTop: '20px' }}>
+                        No exams assigned yet.
+                    </h1>
+                    <p style={{paddingBottom : '110px', cursor: 'pointer' }}>
+                        Please wait for your teachers to assign an exam. 
+                        In the meantime, feel free to check back later.
+                    </p>
+                    </div>
+                }
+                
                 {subjects.map((subject, index) => (
                     <div key={index} className="subject-card">
                         <div className="subject-header">

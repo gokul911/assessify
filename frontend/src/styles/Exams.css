@@ -101,21 +101,21 @@
 }
 
 /* Subject-specific header colors */
-.subject-card:nth-child(1) .subject-header {
-  background: #2e7d32;
+.subject-card:nth-child(3n+1) .subject-header {
+  background: #2e7d32; /* Green */
 }
 
-.subject-card:nth-child(2) .subject-header {
-  background: #1565c0;
+.subject-card:nth-child(3n+2) .subject-header {
+  background: #1565c0; /* Blue */
 }
 
-.subject-card:nth-child(3) .subject-header {
-  background: #6a1b9a;
+.subject-card:nth-child(3n+3) .subject-header {
+  background: #6a1b9a; /* Purple */
 }
 
-/* .subject-card:nth-child(4) .subject-header {
-  background: #ff8f00;
-} */
+.subject-card:nth-child(3n+4) .subject-header {
+  background: #e79d3b; /* Orange */
+}
 
 @media (max-width: 768px) {
   .subjects-grid {

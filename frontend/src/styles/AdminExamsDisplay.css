@@ -1,0 +1,244 @@
+/* Admin page wrapper */
+.admin-page {
+  transition: filter 0.3s ease;
+}
+
+/* Reuse .exams-container, .header, .subjects-grid from student exams CSS */
+/* Add new button styles for admin actions */
+
+/* Admin action buttons inside card */
+.admin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Button Styles */
+.btn-refresh-all {
+  background: #1f2937;
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 8px;
+  border: none;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.btn-refresh-all:hover {
+  cursor: pointer;
+  background: #2563eb;    /* Slightly enlarge the button */
+}
+
+.admin-btn-view, .btn-schedule, .btn-delete {
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* View button */
+.admin-btn-view {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.admin-btn-view:hover {
+  background-color: #2563eb;
+}
+
+.btn-schedule:hover {
+  background-color: #059669;
+}
+
+/* Delete button */
+.btn-delete {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.btn-delete:hover {
+  background-color: #dc2626;
+}
+
+/* Responsive for buttons */
+@media (max-width: 768px) {
+  .admin-actions {
+    flex-direction: column;
+  }
+}
+
+.floating-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  width: 60px;
+  height: 60px;
+  font-size: 32px;
+  border-radius: 50%;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.floating-button:hover {
+  transform: scale(1.1);
+}
+
+.button-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  right: 70px;
+  bottom: 15px;
+  background: #333;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: 0.3s;
+  white-space: nowrap;
+}
+
+.floating-button:hover .button-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(2px);
+}
+
+/* Modal Box */
+.modal-box {
+  background: black;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Modal Close Button */
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: white;
+  transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+  color: #ff4d4f;
+}
+
+/* Modal Body */
+.modal-body {
+  overflow-y: auto;
+}
+
+.modal-body p{
+  color: white;
+}
+
+/* Questions List inside Modal */
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  color: #333;
+}
+
+.question-item {
+  padding: 10px;
+  border: 1px solid #ddd;
+  color: white;
+  border-radius: 8px;
+  background: #333;
+}
+
+/* Schedule exam modal */
+.schedule-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.schedule-form label {
+  font-weight: bold;
+}
+
+.schedule-form input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.btn-schedule-submit {
+  margin-top: 15px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-schedule-submit:hover {
+  background-color: #0056b3;
+}
+
+.scheduled-time {
+  background: #003fa4;
+  color: white;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.15); /* subtle greenish shadow */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.scheduled-time:hover {
+  border-color: transparent;
+  cursor: pointer;
+}
+
+.scheduled-time p {
+  margin: 4px 0;
+  font-weight: 500;
+  word-break: break-word; /* Prevents overflow on small screens */
+}
+

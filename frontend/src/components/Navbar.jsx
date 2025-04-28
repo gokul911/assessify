@@ -8,6 +8,7 @@ const Navbar = () => {
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [userInitial, setUserInitial] = useState("");
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -22,6 +23,11 @@ const Navbar = () => {
                     setIsAuthenticated(true); // User is authenticated
                     console.log("User role:", userData.role);
                     setIsAdmin(userData.role === "admin"); // Check if admin
+
+                    const username = userData.email.split('@')[0];
+                    if (username.length > 0) {
+                        setUserInitial(username[0].toUpperCase());
+                    }
                 }
             } catch (error) {
                 console.error("Authentication check failed:", error.response?.data || error.message);
@@ -46,7 +52,7 @@ const Navbar = () => {
         } catch (error) {
             console.error("Logout failed:", error.response?.data || error.message);
         }
-    };
+    };   
 
     return (
         <>
@@ -59,11 +65,12 @@ const Navbar = () => {
                     <li><NavLink to={isAdmin ? "/admin" : "/"} end>Home</NavLink></li>
                     <li><NavLink to={isAdmin ? "/admin/dashboard" : "/dashboard"}>Dashboard</NavLink></li>
                     <li><NavLink to={isAdmin ? "/admin/exams" : "/exams"}>Exams</NavLink></li>
-                    <li><NavLink to={isAdmin ? "/admin/analytics" : "/analytics"}>Analytics</NavLink></li>
+                    {/* <li><NavLink to={isAdmin ? "/admin/analytics" : "/analytics"}>Analytics</NavLink></li> */}
                     <li><NavLink to={isAdmin ? "/admin/profile" : "/profile"}><i className="fas fa-user-circle"></i></NavLink></li>
                 </ul>
                 {isAuthenticated ? (
                     <div className="auth-buttons">
+                        <div className="user-avatar">{userInitial}</div>
                         <NavLink className="auth-button" onClick={handleLogout}>Logout</NavLink>
                     </div>
                 ) : (

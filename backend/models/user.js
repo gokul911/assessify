@@ -6,8 +6,10 @@ const examResultSchema = new mongoose.Schema({
   subject: String,
   score: Number,
   totalMarks : Number,
-  answers : {type : Map, of : String},
-  date: { type: Date, default: Date.now },
+  markedAnswers : {type : Map, of : String},
+  result : {type : String},
+  status : {type : String},
+  date: { type: Date, default: Date.now }
 });
 
 const userSchema = new mongoose.Schema(

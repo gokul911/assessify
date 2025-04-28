@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as faceapi from 'face-api.js';
+import { useLocation } from 'react-router-dom';
 
 const FaceDetection = ({handleViolationUpdate}) => {
   const videoRef = useRef();
@@ -13,6 +14,8 @@ const FaceDetection = ({handleViolationUpdate}) => {
   const [position, setPosition] = useState({ x: 1370, y: 20 });
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  // const location = useLocation();
 
   useEffect(() => {
     const loadModelsAndStart = async () => {
@@ -36,7 +39,25 @@ const FaceDetection = ({handleViolationUpdate}) => {
       loadModelsAndStart();
     }
   }, [showWebcam]);
+
+  // useEffect(() => {
+  //   if (location.pathname === '/exams') {
+  //     stopWebcam(); // Stop the webcam when navigated to "/exams"
+  //   }
+  // }, [location.pathname]); // Re-run this effect when the path changes
+
+  // const stopWebcam = () => {
+  //   if (videoRef.current && videoRef.current.srcObject) {
+  //     const stream = videoRef.current.srcObject;
+  //     const tracks = stream.getTracks();
   
+  //     tracks.forEach((track) => {
+  //       track.stop();
+  //     });
+  
+  //     videoRef.current.srcObject = null;
+  //   }
+  // };
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -126,17 +147,38 @@ const FaceDetection = ({handleViolationUpdate}) => {
 
   return (
     <>
-        <div style={{ fontSize: '25px', marginTop: '4px', color: 'white' }}>
-            <p>🚫 No Face Count: {noFaceCount}</p>
-            <p>👥 Multiple Face Count: {multiFaceCount}</p>
-        </div>
+      <div
+        style={{
+          position: 'fixed',
+          top: '20px',
+          left: '20px',
+          backgroundColor: '#1e293b',
+          color: '#f8fafc',
+          fontSize: '16px',
+          padding: '1rem 1.5rem',
+          borderRadius: '12px',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)',
+          zIndex: 1000,
+          lineHeight: 1.6,
+          width: 'fit-content',
+          minWidth: '200px',
+          transition: 'transform 0.3s ease',
+        }}
+      >
+        <p style={{ margin: '0.3rem 0' }}>
+          🚫 <strong>No Face Count:</strong> {noFaceCount}
+        </p>
+        <p style={{ margin: '0.3rem 0' }}>
+          👥 <strong>Multiple Face Count:</strong> {multiFaceCount}
+        </p>
+      </div>
 
       <button
         onClick={() => setShowWebcam(prev => !prev)}
         style={{
           position: 'fixed',
-          top: '0px',
-          right: '20px',
+          top: '20px',
+          right: '110px',
           zIndex: 10000,
           padding: '6px 12px',
           fontSize: '14px',

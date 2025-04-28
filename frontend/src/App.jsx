@@ -8,6 +8,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Signup from './components/Signup';
 import TimedExam from './components/TimedExam';
 import ExamResult from './components/ExamResult';
+import AdminDashboard from './components/AdminDashboard';
+// import AdminExamCreation from './components/AdminExamCreation';
+import AdminExamsDisplay from './components/AdminExamsDisplay';
 
 function App() {
 
@@ -24,10 +27,10 @@ function App() {
           <Route path='/admin' element={<Home/>}></Route>
 
           <Route path='/dashboard' element={<ProtectedRoute><Dashboard/></ProtectedRoute>}></Route>
-          <Route path='/admin/dashboard' element={<ProtectedRoute><Dashboard/></ProtectedRoute>}></Route>
+          <Route path='/admin/dashboard' element={<ProtectedRoute><AdminDashboard/></ProtectedRoute>}></Route>
 
           <Route path='/exams' element={<ProtectedRoute><Exams/></ProtectedRoute>}></Route>
-          <Route path='/admin/exams' element={<ProtectedRoute><Exams/></ProtectedRoute>}></Route>
+          <Route path='/admin/exams' element={<ProtectedRoute><AdminExamsDisplay/></ProtectedRoute>}></Route>
 
         </Route>
       </Routes>

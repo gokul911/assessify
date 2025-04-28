@@ -16,40 +16,55 @@ const TimedExam = () => {
   const [multiFaceCount, setMultiFaceCount] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const [tabWarnings, setTabWarnings] = useState(0);
-  const [showFullscreenPrompt, setShowFullscreenPrompt] = useState(false);
+
+  const [scheduledFrom, setScheduledFrom] = useState(null);
+  const [scheduledTo, setScheduledTo] = useState(null);
+  const [hasStarted, setHasStarted] = useState(false);
 
   const TAB_WARNING_LIMIT = 3;
   const FACE_VIOLATION_LIMIT = 10;
+  
+  const checkExamStatus = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/user/individual-student-exams`,
+        { withCredentials: true }
+      );
 
-  // Fullscreen entry
-  const enterFullscreen = () => {
-    const elem = document.documentElement;
-    if (elem.requestFullscreen) elem.requestFullscreen();
-    else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
-    else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
-    else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
-    setShowFullscreenPrompt(false);
+      if (response.data.some((exam) => exam.name === subject && exam.status === "Completed")) {
+        setIsCompleted(true);
+      }
+    } catch (error) {
+      console.error("Error fetching exam status:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Initial fetch: exam status
-  useEffect(() => {
-    const checkExamStatus = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/user/exams`,
-          { withCredentials: true }
-        );
-
-        if (response.data.some((exam) => exam.name === subject && exam.status === "Completed")) {
-          setIsCompleted(true);
-        }
-      } catch (error) {
-        console.error("Error fetching exam status:", error);
-      } finally {
-        setLoading(false);
+  const fetchScheduledTimes = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/admin/all-exams`,
+        { withCredentials: true }
+      );
+  
+      const exam = response.data.find((exam) => exam.subject.trim() === subject);
+      if (exam) {
+        setScheduledFrom(new Date(exam.scheduledFrom));
+        setScheduledTo(new Date(exam.scheduledTo));
       }
+
+    } catch (error) {
+      console.error("Error fetching scheduled times:", error);
+    }
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      await checkExamStatus();  // Check if completed
+      await fetchScheduledTimes(); // Fetch scheduledFrom and scheduledTo
     };
-    checkExamStatus();
+    init();
   }, [subject]);
 
   // Fetch questions
@@ -61,6 +76,7 @@ const TimedExam = () => {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/user/questions`, {
           withCredentials: true,
         });
+        console.log("Fetched MCQ Questions -> ", response.data);
         setMcqQuestions(response.data);
       } catch (error) {
         console.error("Error fetching questions:", error);
@@ -70,12 +86,12 @@ const TimedExam = () => {
     fetchQuestions();
   }, [isCompleted]);
 
-  // Timer countdown
-  useEffect(() => {
-    if (isCompleted || isLocked) return;
-    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    return () => clearInterval(timer);
-  }, [isCompleted, isLocked]);
+  // // Timer countdown
+  // useEffect(() => {
+  //   if (isCompleted || isLocked) return;
+  //   const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+  //   return () => clearInterval(timer);
+  // }, [isCompleted, isLocked]);
 
   // Submit when time runs out
   useEffect(() => {
@@ -84,26 +100,57 @@ const TimedExam = () => {
     }
   }, [timeLeft]);
 
+
+  // Updating the timer according to scheduledFrom and To
+  useEffect(() => {
+    if (!scheduledFrom || !scheduledTo || isCompleted || isLocked) return;
+
+    const timer = setInterval(() => {
+      const now = new Date();
+
+      if (now >= scheduledFrom && now <= scheduledTo) {
+        setHasStarted(true);
+        const remainingSeconds = Math.floor((scheduledTo - now) / 1000);
+        setTimeLeft(remainingSeconds);
+      } else if (now > scheduledTo) {
+        if (!isCompleted) {
+          handleSubmit(); // Auto submit when time is over
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [scheduledFrom, scheduledTo, isLocked, isCompleted]);
+
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+  
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   // Handle answer selection
   const handleAnswer = (question, answer) => {
     setAnswers((prev) => ({ ...prev, [question]: answer }));
   };
 
   // Handle test submission
-  const handleSubmit = async (forceZeroScore = false) => {
+  const handleSubmit = async (forceZeroScore = false, providedTotalMarks = null) => {
+    const questions = mcqQuestions[subject] || [];
+    const totalMarks = providedTotalMarks ?? questions.length;
+  
     let score = 0;
-    let totalMarks = mcqQuestions[subject]?.length || 0;
-
-    if (!forceZeroScore && mcqQuestions[subject]) {
-      mcqQuestions[subject].forEach((q) => {
-        if (answers[q.question]?.trim() === q.answer?.trim()) score++;
-      });
+    if (!forceZeroScore) {
+      score = questions.reduce((acc, q) => {
+        return acc + (answers[q.question]?.trim() === q.answer?.trim() ? 1 : 0);
+      }, 0);
     }
-
+  
     try {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/user/exam-results`,
-        { subject, score: forceZeroScore ? 0 : score, totalMarks, answers },
+        { subject, score, totalMarks, answers },
         { withCredentials: true }
       );
       setIsCompleted(true);
@@ -114,20 +161,34 @@ const TimedExam = () => {
   };
 
   // Handle face violations
-  const handleViolationUpdate = (noFace, multiFace) => {
-    setNoFaceCount(noFace);
-    setMultiFaceCount(multiFace);
+  const [pendingLock, setPendingLock] = useState(false);
 
-    if (noFace >= FACE_VIOLATION_LIMIT || multiFace >= FACE_VIOLATION_LIMIT) {
+  useEffect(() => {
+    if (pendingLock && mcqQuestions[subject]) {
+      const totalMarks = mcqQuestions[subject].length;
       alert("🚫 Test locked due to face detection violations!");
       setIsLocked(true);
-      handleSubmit(true); // force submit with 0 score
+      handleSubmit(true, totalMarks);
+      setPendingLock(false);
+    }
+  }, [pendingLock, mcqQuestions, subject]);
+
+  const handleViolationUpdate = (noFace, multiFace) => {
+    if (!hasStarted) return; // 🚫 Ignore updates before exam starts
+
+    setNoFaceCount(noFace);
+    setMultiFaceCount(multiFace);
+  
+    if (noFace >= FACE_VIOLATION_LIMIT || multiFace >= FACE_VIOLATION_LIMIT) {
+      setPendingLock(true);
     }
   };
 
   // Handle tab switch & visibility
   useEffect(() => {
     const handleVisibilityChange = () => {
+      if (!hasStarted) return; // 🚫 Ignore tab switches before exam starts
+
       if (document.hidden && !isCompleted && !isLocked) {
         const newCount = tabWarnings + 1;
         setTabWarnings(newCount);
@@ -138,48 +199,40 @@ const TimedExam = () => {
           setIsLocked(true);
           handleSubmit(true);
         }
-      } else if (!document.hidden && !isCompleted && !isLocked) {
-        setShowFullscreenPrompt(true); // Ask to re-enter fullscreen
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [tabWarnings, isCompleted, isLocked]);
-
-  // Enter fullscreen on load
-  useEffect(() => {
-    if (!isCompleted && !isLocked) {
-      enterFullscreen();
-    }
-  }, []);
+  }, [tabWarnings, hasStarted, isCompleted, isLocked]);
 
   if (loading) return <p>Loading...</p>;
 
   return (
     <>
-      {showFullscreenPrompt && (
-        <div className="fullscreen-prompt">
-          <p>You returned to the test. Click below to re-enter full screen.</p>
-          <button onClick={enterFullscreen}>Return to Full Screen</button>
-        </div>
-      )}
 
-      <FaceDetection handleViolationUpdate={handleViolationUpdate} />
+      {hasStarted && <FaceDetection handleViolationUpdate={handleViolationUpdate} />}
 
       <div className="exam-container">
         <h2>{subject} Exam</h2>
-
-        {isCompleted ? (
+        
+        {!hasStarted ? (
+          !(scheduledFrom instanceof Date && !isNaN(scheduledFrom)) ? (
+            <p className="waiting-message">Exam isn't scheduled yet.</p>
+          ) : (
+            <p className="waiting-message">
+              Exam will start at <strong>{scheduledFrom?.toLocaleString()}</strong>
+            </p>
+          )
+        ) : isCompleted ? (
           <p>You have already completed this exam. You cannot retake it.</p>
         ) : isLocked ? (
           <p>🚫 This test has been locked due to rule violations.</p>
         ) : (
           <>
             <p className="timer">
-              Time Left: <strong>{timeLeft}</strong> seconds
+              Time Left: <strong>{formatTime(timeLeft)}</strong> seconds
             </p>
-
             {mcqQuestions[subject]?.map((q, index) => (
               <div key={index}>
                 <p>Q{index + 1}) {q.question}</p>

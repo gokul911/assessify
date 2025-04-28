@@ -19,6 +19,7 @@ const ExamResult = () => {
         );
 
         setMcqQuestions(response.data);
+        console.log("ExamResult.jsx /questions mcqQuestions data -> ", response.data);
 
       } catch (error) {
         console.error("Error fetching questions for exam result :", error);
@@ -34,7 +35,7 @@ const ExamResult = () => {
         { withCredentials: true }
       );
 
-      setAnswers(response.data.answers);
+      setAnswers(response.data.markedAnswers);
       setScore(response.data.score);
     }
     fetchAnswers();
@@ -53,7 +54,7 @@ const ExamResult = () => {
 
               return (
                   <div key={index} className={`result-item ${isCorrect ? "correct" : "incorrect"}`}>
-                      <p><strong>Q:</strong> {q.question}</p>
+                      <p><strong>Q{index+1}:</strong> {q.question}</p>
                       <p><strong>Your Answer:</strong> {userAnswer}</p>
                       <p><strong>Correct Answer:</strong> {q.answer}</p>
                   </div>

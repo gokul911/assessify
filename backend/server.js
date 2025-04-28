@@ -6,20 +6,10 @@ require('dotenv').config();
 const app = express();
 const cookieParser = require("cookie-parser");
 
-// GraphQL
-const { graphqlHTTP } = require("express-graphql");
-const { makeExecutableSchema } = require('@graphql-tools/schema');
-const typeDefs = require('./graphql/typeDefs');
-const resolvers = require('./graphql/resolvers');
-
-const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers,
-});
-
 // REST
 const {router:authRoutes, verifyToken} = require("./routes/auth");
 const userRoutes = require("./routes/user");
+const adminRoutes = require("./routes/admin");
 
 // Connecting Express with MongoDB ->
 const mongoURI = process.env.MONGO_URI;
@@ -47,16 +37,7 @@ app.use(express.urlencoded( {extended : true} ));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-
-app.use(
-  "/graphql",
-  verifyToken, // Sets req.user
-  graphqlHTTP((req, res) => ({
-    schema,
-    graphiql: true,
-    context: { req }, // req.user is now available here
-  }))
-);
+app.use("/api/admin", adminRoutes);
 
 app.listen(port, () => {
   console.log(`Server starting at http://localhost:${port}`);
