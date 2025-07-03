@@ -182,7 +182,6 @@ router.delete('/delete-exam/:id', async (req, res) => {
 });
 
 // ******************************************************************************************************************************
-
 router.put('/schedule-exam/:id', async (req, res) => {
   try {
     const { from, to } = req.body;

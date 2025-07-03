@@ -27,7 +27,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true, se
 // Enable CORS with specific origin and credentials
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost'], // "http://localhost" is for frontend Docker container
+  origin: ['https://assessify-delta.vercel.app', 'http://localhost:5173', 'http://localhost'], // "http://localhost" is for frontend Docker container
   credentials: true, // Allow cookies and other credentials
 }));
 app.use(cookieParser());
