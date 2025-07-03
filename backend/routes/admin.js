@@ -169,6 +169,11 @@ router.delete('/delete-exam/:id', async (req, res) => {
       return res.status(404).json({ error: "Exam not found" });
     }
 
+    await Users.updateMany(
+      {},
+      {$pull : {exams : {subject : deletedExam.subject}}} // $pull is a MongoDB update operator used to remove elements from an array that match a specified condition.
+    );
+
     res.json({ message: "Exam deleted successfully" });
   } catch (error) {
     console.error("Error deleting exam:", error);
