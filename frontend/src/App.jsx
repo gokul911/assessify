@@ -2,8 +2,8 @@ import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import Login from './components/Login';
 import Home from './components/Home';
 import Dashboard from './components/Dashboard';
-import Navbar from './components/Navbar';
 import Exams from './components/Exams';
+import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import Signup from './components/Signup';
 import TimedExam from './components/TimedExam';
@@ -31,7 +31,6 @@ function App() {
 
           <Route path='/exams' element={<ProtectedRoute><Exams/></ProtectedRoute>}></Route>
           <Route path='/admin/exams' element={<ProtectedRoute><AdminExamsDisplay/></ProtectedRoute>}></Route>
-
         </Route>
       </Routes>
     </Router>

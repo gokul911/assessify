@@ -32,10 +32,11 @@ router.put('/update-all-exam-status', verifyToken, async (req, res) => {
     // 2. Iterate through all exams and check the status for each
     const updatedExamsStatus = [];
 
+    // 3. Find all users who attempted this exam
+    const users = await Users.find({role : "user"});
+    console.log("users inside /api/admin/update-all-exam-status", users);
+    
     for (const exam of exams) {
-      // 3. Find all users who attempted this exam
-      const users = await Users.find({role : "user"});
-      console.log("users inside /api/admin/update-all-exam-status", users)
 
       // 4. Check if all users have 'Completed' status for this exam
       const allCompleted = users.every(user => {
@@ -65,8 +66,6 @@ router.put('/update-all-exam-status', verifyToken, async (req, res) => {
     res.status(500).json({ message: "Server error." });
   }
 });
-
-
 
 // ******************************************************************************************************************************
 

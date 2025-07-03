@@ -65,8 +65,6 @@ const Navbar = () => {
                     <li><NavLink to={isAdmin ? "/admin" : "/"} end>Home</NavLink></li>
                     <li><NavLink to={isAdmin ? "/admin/dashboard" : "/dashboard"}>Dashboard</NavLink></li>
                     <li><NavLink to={isAdmin ? "/admin/exams" : "/exams"}>Exams</NavLink></li>
-                    {/* <li><NavLink to={isAdmin ? "/admin/analytics" : "/analytics"}>Analytics</NavLink></li> */}
-                    <li><NavLink to={isAdmin ? "/admin/profile" : "/profile"}><i className="fas fa-user-circle"></i></NavLink></li>
                 </ul>
                 {isAuthenticated ? (
                     <div className="auth-buttons">

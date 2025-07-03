@@ -23,46 +23,6 @@ const Dashboard = () => {
     fetchAnalytics();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchAnalytics = async () => {
-  //     try {
-  //       const response = await axios.post(
-  //         `${import.meta.env.VITE_API_URL}/graphql`,
-  //         {
-  //           query: `
-  //             query {
-  //               examAnalytics {
-  //                 email
-  //                 totalExams
-  //                 avgScore
-  //                 passRate
-  //                 completionRate
-  //                 recentExams {
-  //                   subject
-  //                   score
-  //                   totalMarks
-  //                 }
-  //               }
-  //             }
-  //           `
-  //         },
-  //         {
-  //           withCredentials: true,
-  //         }
-  //       );
-  //       console.log("GraphQL - response data:", response.data);
-  //       setAnalytics(response.data.data.examAnalytics);
-  //     } catch (error) {
-  //       console.error("Error fetching analytics:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  
-  //   fetchAnalytics();
-  // }, []);
-  
-
   const generateReport = async () => {
     if (!analytics?.email) {
       alert("User email not available!");
@@ -150,7 +110,7 @@ const Dashboard = () => {
       {/* Performance Overview Section */}
       <div className="analytics-container">
         <div className="main-chart">
-          <h3>Performance Overview</h3>
+          <h3>Overview</h3>
           {analytics?.recentExams.length ? (
             <ResponsiveContainer height={200}>
               <LineChart data={analytics.recentExams}>

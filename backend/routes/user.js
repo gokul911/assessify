@@ -53,7 +53,7 @@ const router = express.Router();
 
 router.get("/individual-student-exams", verifyToken, async (req, res) => {
   try {
-    const allExams = await Exam.find(); // global list with .name or .subject
+    const allExams = await Exam.find({}, 'subject'); // global list of all exams with only one field i.e. subject
     const user = await Users.findOne({ email: req.user.email });
 
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -146,41 +146,10 @@ router.get("/exam-analytics", verifyToken, async (req, res) => {
 
 // ******************************************************************************************************************************
 
-// const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
-// const API_KEY = process.env.GOOGLE_API_KEY;
-// const RANGE = "Sheet1!A2:G";
-
-// router.get('/questions', async (req, res) => {
-//   try {
-//     const response = await axios.get(
-//       `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`
-//     );
-
-//     const rows = response.data.values;
-//     const formattedData = {};
-
-//     rows.forEach(([subj, question, option1, option2, option3, option4, answer]) => {
-//       if (!formattedData[subj]) {
-//         formattedData[subj] = [];
-//       }
-//       formattedData[subj].push({
-//         question,
-//         options: [option1, option2, option3, option4],
-//         answer,
-//       });
-//     });
-
-//     console.log("Formatted Data is here -> ", formattedData);
-
-//     res.json(formattedData);
-//   } catch (error) {
-//     res.status(500).json({ error: "Error fetching questions from Google Sheets" });
-//   }
-// });
-
 router.get('/questions', async (req, res) => {
   try {
     const exams = await Exam.find({}, 'subject questions'); // Fetch subject and questions only
+    console.log("exams data from mongo inside /questions api", exams);
     const formattedData = {};
 
     exams.forEach((exam) => {
@@ -216,9 +185,22 @@ router.get("/exam-result/:subject", verifyToken, async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const reqdSubject = user.exams.find((exam) => exam.subject === subject);
+    const reqdSubjectExam = await Exam.findOne({subject});
 
-    res.json(reqdSubject);
-    console.log("/exam-result/:subject reqdSubject data", reqdSubject);
+    const {score, markedAnswers} = reqdSubject;
+    const {questions} = reqdSubjectExam;
+    const quesAndans = questions.map((q) => {
+      return {
+        question : q.question,
+        correctAnswer : q.correctAnswer,
+        markedAnswer : markedAnswers.get(q.question) // As markedAnswers is a Map and not a JS object, we use get() method to access the key's value
+      }
+    });
+    
+    res.json({score, quesAndans});
+
+    console.log("/exam-result/:subject markedAnswers data", markedAnswers);
+    console.log("/exam-result/:subject quesAndans data", quesAndans);
 
   } catch(err) {
     console.error("Error fetching exam result:", err);
