@@ -217,11 +217,16 @@ const TimedExam = () => {
         <h2>{subject} Exam</h2>
         
         {!hasStarted ? (
-          !(scheduledFrom instanceof Date && !isNaN(scheduledFrom)) ? (
+          !(scheduledFrom instanceof Date && !isNaN(scheduledFrom.valueOf())) ? (
             <p className="waiting-message">Exam isn't scheduled yet.</p>
           ) : (
             <p className="waiting-message">
-              Exam will start at <strong>{scheduledFrom?.toLocaleString()}</strong>
+              Exam will start at 
+              <strong>
+                  {scheduledFrom
+                    ? scheduledFrom.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+                    : ''}
+              </strong>
             </p>
           )
         ) : isCompleted ? (

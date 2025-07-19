@@ -84,9 +84,14 @@ const AdminExamsDisplay = () => {
   
   const handleScheduleSubmit = async () => {
     try {
+      const fromUTC = new Date(scheduleData.from).toISOString();
+      const toUTC = new Date(scheduleData.to).toISOString();
       await axios.put(
         `${import.meta.env.VITE_API_URL}/api/admin/schedule-exam/${scheduleExamId}`,
-        scheduleData,
+        {
+          from : fromUTC,
+          to : toUTC
+        },
         { withCredentials: true }
       );
       toast.success("Exam scheduled successfully!");
@@ -164,7 +169,7 @@ const AdminExamsDisplay = () => {
                 {exam.scheduledFrom && exam.scheduledTo ? (
                   <div className="scheduled-time">
                     <p>Scheduled:</p>
-                    <p>{new Date(exam.scheduledFrom).toLocaleString()} - {new Date(exam.scheduledTo).toLocaleString()}</p>
+                    <p>{new Date(exam.scheduledFrom).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} - {new Date(exam.scheduledTo).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
                   </div>
                 ) : (
                   <button className="btn-view" onClick={() => handleScheduleExam(exam._id)}>
