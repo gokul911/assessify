@@ -93,26 +93,32 @@ router.post("/exam-results", verifyToken, async (req, res) => {
         return res.status(403).json({ message: "Exam already completed" });
     }
 
-    const percentage = (score / totalMarks) * 100;
+    const percentage = totalMarks > 0 ? (score / totalMarks) * 100 : 0;
     const result = percentage >= 40 ? "Pass" : "Fail";
     const status = "Completed";
-    
-    user.exams.push(
-      {
-        subject,
-        score,
-        totalMarks,
-        markedAnswers : answers,
-        result,
-        status
-      }
+
+    const markedAnswers = Object.fromEntries(
+      Object.entries(answers || {}).map(([question, answer]) => [
+        String(question),
+        String(answer ?? ""),
+      ])
     );
+
+    user.exams.push({
+      subject,
+      score,
+      totalMarks,
+      markedAnswers,
+      result,
+      status,
+    });
 
     await user.save();
 
     res.status(201).json({ message: "Result saved successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Error saving result" });
+    console.error("Error saving exam result:", error);
+    res.status(500).json({ error: "Error saving result", message: error.message });
   }
 });
 
@@ -189,12 +195,21 @@ router.get("/exam-result/:subject", verifyToken, async (req, res) => {
 
     const {score, markedAnswers} = reqdSubject;
     const {questions} = reqdSubjectExam;
+
+    const getMarkedAnswer = (question) => {
+      if (!markedAnswers) return undefined;
+      if (typeof markedAnswers.get === "function") {
+        return markedAnswers.get(question);
+      }
+      return markedAnswers[question];
+    };
+
     const quesAndans = questions.map((q) => {
       return {
         question : q.question,
         correctAnswer : q.correctAnswer,
-        markedAnswer : markedAnswers.get(q.question) // As markedAnswers is a Map and not a JS object, we use get() method to access the key's value
-      }
+        markedAnswer : getMarkedAnswer(q.question),
+      };
     });
     
     res.json({score, quesAndans});

@@ -6,7 +6,7 @@ const examResultSchema = new mongoose.Schema({
   subject: String,
   score: Number,
   totalMarks : Number,
-  markedAnswers : {type : Map, of : String},
+  markedAnswers : { type: mongoose.Schema.Types.Mixed, default: {} },
   result : {type : String},
   status : {type : String},
   date: { type: Date, default: Date.now }
