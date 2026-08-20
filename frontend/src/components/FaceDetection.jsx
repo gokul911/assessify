@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as faceapi from 'face-api.js';
-import { useLocation } from 'react-router-dom';
 
 const FaceDetection = ({handleViolationUpdate}) => {
   const videoRef = useRef();
@@ -86,19 +85,10 @@ const FaceDetection = ({handleViolationUpdate}) => {
 
         if (detections.length === 0) {
           setStatus("⚠️ No face detected");
-          setNoFaceCount(prev => {
-          const updated = prev + 1;
-          handleViolationUpdate(updated, multiFaceCount);
-          return updated;
-          });
+          setNoFaceCount((prev) => prev + 1);
         } else if (detections.length > 1) {
-            setStatus("⚠️ Multiple faces detected");
-            setMultiFaceCount(prev => {
-            const updated = prev + 1;
-            handleViolationUpdate(noFaceCount, updated);
-            return updated;
-            });
-            
+          setStatus("⚠️ Multiple faces detected");
+          setMultiFaceCount((prev) => prev + 1);
         } else {
           setStatus("✅ Face detected");
         }
@@ -107,6 +97,10 @@ const FaceDetection = ({handleViolationUpdate}) => {
 
     return () => clearInterval(interval);
   }, [showWebcam]);
+
+  useEffect(() => {
+    handleViolationUpdate(noFaceCount, multiFaceCount);
+  }, [noFaceCount, multiFaceCount, handleViolationUpdate]);
 
   // Drag handlers
   const handleMouseDown = (e) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import '../styles/TimedExam.css';
@@ -20,6 +20,8 @@ const TimedExam = () => {
   const [scheduledFrom, setScheduledFrom] = useState(null);
   const [scheduledTo, setScheduledTo] = useState(null);
   const [hasStarted, setHasStarted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const TAB_WARNING_LIMIT = 3;
   const FACE_VIOLATION_LIMIT = 10;
@@ -137,16 +139,25 @@ const TimedExam = () => {
 
   // Handle test submission
   const handleSubmit = async (forceZeroScore = false, providedTotalMarks = null) => {
+    if (isSubmitting || isCompleted) return;
+
     const questions = mcqQuestions[subject] || [];
     const totalMarks = providedTotalMarks ?? questions.length;
-  
+
     let score = 0;
     if (!forceZeroScore) {
       score = questions.reduce((acc, q) => {
         return acc + (answers[q.question]?.trim() === q.answer?.trim() ? 1 : 0);
       }, 0);
     }
-  
+
+    const normalizedAnswers = Object.fromEntries(
+      Object.entries(answers).map(([question, answer]) => [question, String(answer ?? "")])
+    );
+
+    setIsSubmitting(true);
+    setSubmitError("");
+
     try {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/user/exam-results`,
@@ -157,6 +168,13 @@ const TimedExam = () => {
       navigate("/exams");
     } catch (error) {
       console.error("Error submitting results:", error);
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Failed to submit exam. Please try again.";
+      setSubmitError(message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -173,16 +191,16 @@ const TimedExam = () => {
     }
   }, [pendingLock, mcqQuestions, subject]);
 
-  const handleViolationUpdate = (noFace, multiFace) => {
-    if (!hasStarted) return; // 🚫 Ignore updates before exam starts
+  const handleViolationUpdate = useCallback((noFace, multiFace) => {
+    if (!hasStarted) return;
 
     setNoFaceCount(noFace);
     setMultiFaceCount(multiFace);
-  
+
     if (noFace >= FACE_VIOLATION_LIMIT || multiFace >= FACE_VIOLATION_LIMIT) {
       setPendingLock(true);
     }
-  };
+  }, [hasStarted]);
 
   // Handle tab switch & visibility
   useEffect(() => {
@@ -255,12 +273,14 @@ const TimedExam = () => {
               </div>
             ))}
 
+            {submitError && <p className="submit-error">{submitError}</p>}
+
             <button
               className="timed-submit-btn"
               onClick={() => handleSubmit()}
-              disabled={isCompleted || isLocked}
+              disabled={isCompleted || isLocked || isSubmitting}
             >
-              Submit
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
           </>
         )}

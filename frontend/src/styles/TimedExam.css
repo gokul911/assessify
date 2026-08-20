@@ -54,6 +54,15 @@
   cursor: pointer;
 }
 
+.submit-error {
+  color: #ff6b6b;
+  background-color: #3a3a3a;
+  border: 1px solid #ff6b6b66;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1.5rem;
+}
+
 .timed-submit-btn {
   background-color: #3b82f6;
   color: white;
